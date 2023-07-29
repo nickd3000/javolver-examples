@@ -38,11 +38,11 @@ public class PictureSolver {
     }
 
     public void run() {
-        //drawerClass = new DnaDrawerPolys(); numObjects = 50;
+        drawerClass = new DnaDrawerPolys(); numObjects = 50;
         //drawerClass = new DnaDrawerSimpleSquares();numObjects = 80;
 
         //drawerClass = new DnaDrawerString(); numObjects=400;
-        drawerClass = new DnaDrawerCircles();numObjects = 250;
+        //drawerClass = new DnaDrawerCircles();numObjects = 250;
 
 
 

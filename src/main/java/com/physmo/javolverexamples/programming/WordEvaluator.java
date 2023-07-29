@@ -1,6 +1,7 @@
 package com.physmo.javolverexamples.programming;
 
 import com.physmo.javolver.Chromosome;
+import com.physmo.javolverexamples.programming.simplemachinie.SimpleMachine2;
 import com.physmo.minvio.BasicDisplay;
 
 public class WordEvaluator implements ProgramEvaluator {
@@ -8,10 +9,10 @@ public class WordEvaluator implements ProgramEvaluator {
     String targetWord = "EVOLVE";
 
     @Override
-    public double evaluate(SimpleMachine sm, Chromosome dna, double step) {
+    public double evaluate(SimpleMachine2 sm, Chromosome dna, double step) {
 
         double score = 0;
-        String machineOutput = sm.console;
+        String machineOutput = ""; //sm.console;
 
         int minWordSize = Math.min(targetWord.length(), machineOutput.length());
         float theScore = 0.0f;
@@ -62,12 +63,12 @@ public class WordEvaluator implements ProgramEvaluator {
     }
 
     @Override
-    public void preEvaluateStep(SimpleMachine sm, Chromosome dna, double step) {
+    public void preEvaluateStep(SimpleMachine2 sm, Chromosome dna, double step) {
 
     }
 
 //    @Override
-//    public double evaluate(SimpleMachine sm, Chromosome dna, int step) {
+//    public double evaluate(SimpleMachine2 sm, Chromosome dna, int step) {
 //        return 0;
 //    }
 
@@ -77,8 +78,18 @@ public class WordEvaluator implements ProgramEvaluator {
     }
 
     @Override
-    public void render(SimpleMachine sm, Chromosome dna, BasicDisplay bd, double step) {
+    public void render(SimpleMachine2 sm, Chromosome dna, BasicDisplay bd, double step) {
 
+    }
+
+    @Override
+    public int getOutputValueHash(SimpleMachine2 sm, Chromosome dna) {
+        return 0;
+    }
+
+    @Override
+    public String report(SimpleMachine2 sm, Chromosome dna) {
+        return null;
     }
 
 }
