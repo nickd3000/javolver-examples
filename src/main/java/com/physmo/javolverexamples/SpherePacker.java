@@ -44,7 +44,7 @@ public class SpherePacker extends MinvioApp {
         testEvolver = Javolver.builder()
                 .populationTargetSize(populationSize)
                 .dnaSize(numberOfSpheres * objectSize)
-                .keepBestIndividualAlive(false)
+                .keepBestIndividualAlive(true)
                 .parallelScoring(true)
                 .addMutationStrategy(new MutationStrategySimple(2, 0.01))
                 .setSelectionStrategy(new SelectionStrategyTournament(0.25))

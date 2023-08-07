@@ -13,7 +13,7 @@ public class WordFinder {
 
     public static void main(String[] args) {
 
-        Solver javolver = Javolver.builder()
+        Solver solver = Javolver.builder()
                 .dnaSize(targetWord.length())
                 .populationTargetSize(50)
                 .keepBestIndividualAlive(true)
@@ -26,14 +26,14 @@ public class WordFinder {
         // Run evolution until we get exact solution.
         for (int j = 0; j < 500; j++) {
             // Perform one evolution step.
-            javolver.doOneCycle();
+            solver.doOneCycle();
 
-            Individual best = javolver.getBestScoringIndividual();
+            Individual best = solver.getBestScoringIndividual();
             boolean exactMatch = toString(best).trim().equals(targetWord);
 
             // Print output every so often.
             if (j % 5 == 0 || exactMatch) {
-                System.out.printf("[%s] Iteration %d Score %6.2f %n", toString(best), j, javolver.getBestScoringIndividual().getScore());
+                System.out.printf("[%s] Iteration %d Score %6.2f %n", toString(best), j, solver.getBestScoringIndividual().getScore());
             }
 
             // Stop if we have an exact match.
@@ -53,6 +53,7 @@ public class WordFinder {
         return total;
     }
 
+    // TODO: move this into scoring class in Javolver
     public static double getScoreForCharacter(char a, char b) {
         int maxDiff = 15;
         int diff = Math.abs(a - b);
