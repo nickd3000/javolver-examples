@@ -1,3 +1,4 @@
+import com.physmo.javolverexamples.programming.FunctionEvaluator;
 import com.physmo.javolverexamples.programming.simplemachinie.SimpleMachine2;
 import org.junit.Test;
 
@@ -57,4 +58,6 @@ public class SimpleMachineTest {
         sm.runCycle();
         System.out.println("regA:"+sm.regA);
     }
+
+
 }
