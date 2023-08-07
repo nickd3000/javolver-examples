@@ -3,6 +3,7 @@ package com.physmo.javolverexamples.programming.simplemachinie;
 import java.util.Arrays;
 
 public class SimpleMachine2 {
+    static Microcode microcode = null;
     public final int memSize = 256 + 100;
     public int[] memory = new int[memSize];
     public int regA = 0;
@@ -16,12 +17,13 @@ public class SimpleMachine2 {
     boolean flagGT = false;
     boolean flagLT = false;
 
+    public SimpleMachine2() {
+        if (microcode == null) microcode = new Microcode();
+    }
+
     public Microcode getMicrocode() {
         return microcode;
     }
-
-    Microcode microcode = new Microcode();
-
 
     public void reset() {
         pc = 0;
@@ -45,7 +47,7 @@ public class SimpleMachine2 {
         if (currentInstruction >= microcode.maxOps) return 0;
         if (currentInstruction < 0) return 0;
 
-        if (currentInstruction==microcode.stopInstruction) return 1;
+        if (currentInstruction == microcode.stopInstruction) return 1;
 
         MicroOp[] ops = microcode.getInstructionCode(currentInstruction);
         if (ops.length > 0) {
@@ -118,6 +120,12 @@ public class SimpleMachine2 {
                 break;
             case XOR:
                 regA = regA ^ tempRegister;
+                break;
+            case SHL:
+                regA = regA << tempRegister;
+                break;
+            case SHR:
+                regA = regA >> tempRegister;
                 break;
             case CMP: // Compare
                 wrk = regA - tempRegister;

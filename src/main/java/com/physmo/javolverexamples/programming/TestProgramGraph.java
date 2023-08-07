@@ -1,9 +1,7 @@
 package com.physmo.javolverexamples.programming;
 
 import com.physmo.javolver.Individual;
-import com.physmo.javolver.breedingstrategy.BreedingStrategyCrossover;
 import com.physmo.javolver.breedingstrategy.BreedingStrategyUniform;
-import com.physmo.javolver.mutationstrategy.MutationStrategyShuffle;
 import com.physmo.javolver.mutationstrategy.MutationStrategySimple;
 import com.physmo.javolver.mutationstrategy.MutationStrategySwap;
 import com.physmo.javolver.selectionstrategy.SelectionStrategyTournament;
@@ -12,43 +10,36 @@ import com.physmo.javolverexamples.programming.simplemachinie.SimpleMachine2;
 import com.physmo.minvio.BasicDisplay;
 import com.physmo.minvio.BasicDisplayAwt;
 
-import java.awt.*;
+import java.awt.Color;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class TestProgramGraph {
 
-    static int populationSize = 1500;
+    static int populationSize = 500;
     static int batchSize = 10;
     ProgramEvaluator programEvaluator = new FunctionEvaluator();
     //ProgramEvaluator programEvaluator = new ProblemMaxOfThree();
+    Javolver evolver;
+    BasicDisplay bd;
+    boolean useOffsetLoader = true;
 
     public static void main(String[] args) throws Exception {
         TestProgramGraph testProgram = new TestProgramGraph();
+        testProgram.init();
         testProgram.go();
+        //testProgram.iterativeRun(0);
     }
 
-    public void go() {
-        BasicDisplay bd = new BasicDisplayAwt(400, 400);
-        // FunctionEvaluator.class
-//        Javolver testEvolver = Javolver.builder()
-//                .dnaSize(150)
-//                .populationTargetSize(populationSize)
-//                .keepBestIndividualAlive(false)
-//                .addMutationStrategy(new MutationStrategySimple(2, 0.5))
-//                .addMutationStrategy(new MutationStrategySwap(0.1, 2))
-//                .addMutationStrategy(new MutationStrategyShuffle(2))
-//                //.addMutationStrategy(new MutationStrategyRandomize(0.1))
-//                .setSelectionStrategy(new SelectionStrategyTournament(0.15))
-//                .setBreedingStrategy(new BreedingStrategyCrossover())
-//                .scoreFunction(this::calculateScore)
-//                .build();
-        Javolver testEvolver = Javolver.builder()
-                .dnaSize(200)
+    public void init() {
+        bd = new BasicDisplayAwt(400, 400);
+        evolver = Javolver.builder()
+                .dnaSize(300)
                 .populationTargetSize(populationSize)
                 .keepBestIndividualAlive(true)
-                .addMutationStrategy(new MutationStrategySimple(10, 1.5, 0.99))
-                .addMutationStrategy(new MutationStrategySimple(1, 10.0, 0.1))
+                .addMutationStrategy(new MutationStrategySimple(10, 1.5, 0.5))
+                .addMutationStrategy(new MutationStrategySimple(1, 5.0, 0.1))
                 .addMutationStrategy(new MutationStrategySwap(0.1, 2))
                 //.addMutationStrategy(new MutationStrategyShuffle(2))
                 //.addMutationStrategy(new MutationStrategyRandomize(0.1))
@@ -58,22 +49,26 @@ public class TestProgramGraph {
                 .setBreedingStrategy(new BreedingStrategyUniform())
                 .scoreFunction(this::calculateScore)
                 .build();
+    }
+
+    public void go() {
+
 
         int iteration = 0;
 
         for (int j = 0; j < 50000; j++) {
 
             for (int i = 0; i < batchSize; i++) {
-                testEvolver.doOneCycle();
+                evolver.doOneCycle();
                 iteration++;
             }
 
-            Individual ind = testEvolver.getBestScoringIndividual();
-            String report = "score: "+ind.getScore();
+            Individual ind = evolver.getBestScoringIndividual();
+            String report = "score: " + ind.getScore();
 
-            System.out.print("iteration: " + iteration + "  "+report);
+            System.out.print("iteration: " + iteration + "  " + report);
             //testEvolver.report();
-            System.out.println(testEvolver.getBestScoringIndividual().toString());
+            System.out.println(evolver.getBestScoringIndividual().toString());
 
 
             //((GeneProgram)ind).render(bd);
@@ -83,18 +78,47 @@ public class TestProgramGraph {
         System.out.print("END ");
     }
 
+    public List<Individual> iterativeRun(int depth) {
+        int maxDepth = 10;
+        List<Individual> bestIndividuals = new ArrayList<>();
+        if (depth < maxDepth) {
+            bestIndividuals.addAll(iterativeRun(depth + 1));
+            bestIndividuals.addAll(iterativeRun(depth + 1));
+            fillPoolFromList(bestIndividuals);
+            runBatch(20);
+            System.out.println("depth: " + depth + " count:" + bestIndividuals.size() + "  score:" + evolver.getBestScoringIndividual().getScore());
+            //System.out.println(showIndividual(evolver.getBestScoringIndividual()));
+            render(bd, evolver.getBestScoringIndividual());
+        } else {
+            evolver.getPool().clear();
+            evolver.init();
+            runBatch(20);
+            render(bd, evolver.getBestScoringIndividual());
+        }
+
+        bestIndividuals.add(evolver.getBestScoringIndividual());
+        return bestIndividuals;
+    }
+
+    public void fillPoolFromList(List<Individual> individuals) {
+        evolver.getPool().clear();
+        for (int i = 0; i < populationSize; i++) {
+            evolver.getPool().add(individuals.get(i % individuals.size()));
+        }
+    }
+
     public double calculateScore(Individual individual) {
 
         SimpleMachine2 sm = new SimpleMachine2();
 
         double score = 0, stepScore = 0;
 
-        for (int x = 0; x < 400; x+=10) {
+        for (int x = 0; x < 400; x += 10) {
             //sm = new SimpleMachine();
             sm.reset();
-            setupSimpleMachineFromDNA(sm, individual);
-            int xx = (int) (x+(Math.random()*10));
-            programEvaluator.preEvaluateStep(sm, individual.getDna(), xx );
+            setupSimpleMachineFromDNA_Offset(sm, individual);
+            int xx = (int) (x + (Math.random() * 10));
+            programEvaluator.preEvaluateStep(sm, individual.getDna(), xx);
             runSimpleMachine(sm);
             stepScore = programEvaluator.evaluate(sm, individual.getDna(), xx);
             score += stepScore;
@@ -102,17 +126,25 @@ public class TestProgramGraph {
             //consoleOutput+=" "+stepScore;
         }
 
+        // increase score for fewer instructions
+        double noOpScore = 0.00;
+        for (int i = 0; i < sm.memory.length; i++) {
+            if (sm.memory[i] == 0) score += noOpScore;
+        }
+
         return score;
     }
 
-
-    boolean useOffsetLoader = true;
-
+    public void runBatch(int batchSize) {
+        for (int i = 0; i < batchSize; i++) {
+            evolver.doOneCycle();
+        }
+    }
 
     // Setup and also run simple machine, return console result.
     public void setupSimpleMachineFromDNA(SimpleMachine2 sm, Individual individual) {
         if (useOffsetLoader) {
-            setupSimpleMachineFromDNA_Offset( sm,  individual);
+            setupSimpleMachineFromDNA_Offset(sm, individual);
             return;
         }
 
@@ -135,20 +167,21 @@ public class TestProgramGraph {
     // Offset style
     // first section contains pointers to later sectins of code
     public void setupSimpleMachineFromDNA_Offset(SimpleMachine2 sm, Individual individual) {
-        int controlLength = 50;
-        int outputInidex=0;
-        for (int i = 0; i < controlLength ; i+=2) {
-            int position = (int) (individual.getDna().getDouble(i ) * 10);
-            int length = (int) (individual.getDna().getDouble(i+1 ) * 5);
-            if (length<1) length=1;
+        int controlLength = 30;
+        int outputInidex = 10;
+        for (int i = 0; i < controlLength; i += 2) {
+            int position = (int) (individual.getDna().getDouble(i) * 10);
+            int length = (int) (individual.getDna().getDouble(i + 1) * 5);
+            if (length < 1) length = 1;
 
-            for (int j=position+controlLength;j<position+controlLength+length;j++) {
-                if (j>=individual.getDna().getSize() || j<0) continue;
+            for (int j = position + controlLength; j < position + controlLength + length; j++) {
+                if (j >= individual.getDna().getSize() || j < 0) continue;
                 int instruction = (int) (Math.abs(individual.getDna().getDouble(j)) * 10);
+                if (outputInidex >= sm.memory.length) continue;
                 sm.memory[outputInidex++] = instruction;
             }
 
-            if (outputInidex>sm.memSize) break;
+            if (outputInidex > sm.memSize) break;
 
         }
     }
@@ -186,7 +219,7 @@ public class TestProgramGraph {
         for (int x = 0; x < 400; x++) {
             sm = new SimpleMachine2();
 
-            setupSimpleMachineFromDNA(sm, individual);
+            setupSimpleMachineFromDNA_Offset(sm, individual);
             programEvaluator.preEvaluateStep(sm, individual.getDna(), x);
             runSimpleMachine(sm);
 

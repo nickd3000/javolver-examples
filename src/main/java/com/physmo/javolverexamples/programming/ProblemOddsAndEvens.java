@@ -52,7 +52,7 @@ public class ProblemOddsAndEvens implements ProgramEvaluator {
 
     @Override
     public int getOutputValueHash(SimpleMachine2 sm, Chromosome dna) {
-        return (int) sm.regB;
+        return (int) sm.regD;
     }
 
     @Override

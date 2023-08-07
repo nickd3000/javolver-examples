@@ -1,6 +1,7 @@
 package com.physmo.javolverexamples.programming;
 
 import com.physmo.javolver.Chromosome;
+import com.physmo.javolver.Scoring;
 import com.physmo.javolverexamples.programming.simplemachinie.SimpleMachine2;
 import com.physmo.minvio.BasicDisplay;
 
@@ -45,15 +46,8 @@ public class ProblemSumTwo implements ProgramEvaluator {
     public double evaluate(SimpleMachine2 sm, Chromosome dna, double step) {
         double output = sm.regD;
         double target = input1+input2;
-        double diff = (Math.abs(output - target));
-        diff = (maxValueRange-diff)/(double)(maxValueRange);
-        if (diff<0) diff=0;
-        if (diff>1) diff=1;
 
-        double score = diff*diff;
-
-        if (output == target) score+=10;
-        return score;
+        return Scoring.scoreValue(output, target, 100);
     }
 
 
@@ -70,7 +64,7 @@ public class ProblemSumTwo implements ProgramEvaluator {
 
     @Override
     public int getOutputValueHash(SimpleMachine2 sm, Chromosome dna) {
-        return (int) sm.regB;
+        return (int) sm.regD;
     }
 
     @Override

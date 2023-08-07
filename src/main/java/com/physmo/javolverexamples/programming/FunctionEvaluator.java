@@ -1,6 +1,7 @@
 package com.physmo.javolverexamples.programming;
 
 import com.physmo.javolver.Chromosome;
+import com.physmo.javolver.Scoring;
 import com.physmo.javolverexamples.programming.simplemachinie.SimpleMachine2;
 import com.physmo.minvio.BasicDisplay;
 
@@ -19,7 +20,7 @@ public class FunctionEvaluator implements ProgramEvaluator {
 
     @Override
     public double evaluate(SimpleMachine2 sm, Chromosome dna, double x) {
-        double score = 0;
+        double score;
 
         double targetVal = func(x);
 
@@ -33,17 +34,19 @@ public class FunctionEvaluator implements ProgramEvaluator {
         //return Math.pow(2*a,2)-Math.pow(1*a,3);
 
         //return 1 + x + (x * x) + (Math.sin(x * 10)+0.5) * 100;
-        return (Math.sin(x/50.0)+1)*100;
+        //return (Math.sin(x/50.0)+1)*100;
         //return x;/// * 0.5;
+       return (x%150<70)?10:150; // notches
+        //return x%100;
     }
 
-    double scoreForExpected(double actual, double expected) {
-        double maxDiff = 400;
-        double diff = Math.abs(expected - actual);
-        if (diff > maxDiff) diff = maxDiff;
-        diff = 1.0-(diff / maxDiff);
-        double score = (diff * diff) *10;
-        return score;
+    public static double scoreForExpected(double actual, double expected) {
+//        double maxDiff = 400;
+//        double diff = Math.abs(expected - actual);
+//        if (diff > maxDiff) diff = maxDiff;
+//        diff = 1.0-(diff / maxDiff);
+//        double score = (diff * diff * diff) *10;
+        return Scoring.scoreValue(actual, expected, 200);
     }
 
     @Override
@@ -69,7 +72,7 @@ public class FunctionEvaluator implements ProgramEvaluator {
 
     @Override
     public int getOutputValueHash(SimpleMachine2 sm, Chromosome dna) {
-        return 0;
+        return sm.regB;
     }
 
     @Override

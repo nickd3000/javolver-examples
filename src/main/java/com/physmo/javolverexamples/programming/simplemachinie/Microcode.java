@@ -21,6 +21,8 @@ import static com.physmo.javolverexamples.programming.simplemachinie.MicroOp.JUM
 import static com.physmo.javolverexamples.programming.simplemachinie.MicroOp.MUL;
 import static com.physmo.javolverexamples.programming.simplemachinie.MicroOp.NOP;
 import static com.physmo.javolverexamples.programming.simplemachinie.MicroOp.OR;
+import static com.physmo.javolverexamples.programming.simplemachinie.MicroOp.SHL;
+import static com.physmo.javolverexamples.programming.simplemachinie.MicroOp.SHR;
 import static com.physmo.javolverexamples.programming.simplemachinie.MicroOp.STOP;
 import static com.physmo.javolverexamples.programming.simplemachinie.MicroOp.STORE_A;
 import static com.physmo.javolverexamples.programming.simplemachinie.MicroOp.STORE_B;
@@ -112,6 +114,13 @@ public class Microcode {
         define(id++, "AND A,B", FETCH_B, AND);
         define(id++, "AND A,C", FETCH_C, AND);
         define(id++, "AND A,D", FETCH_D, AND);
+        define(id++, "SHL A,B", FETCH_B, SHL);
+        define(id++, "SHL A,C", FETCH_C, SHL);
+        define(id++, "SHL A,D", FETCH_D, SHL);
+        define(id++, "SHR A,B", FETCH_B, SHR);
+        define(id++, "SHR A,C", FETCH_C, SHR);
+        define(id++, "SHR A,D", FETCH_D, SHR);
+
 
         define(id++, "JP NZ,byte", FETCH_ADDRESS, JUMP_NZ);
         define(id++, "JP Z,byte", FETCH_ADDRESS, JUMP_Z);
@@ -138,6 +147,7 @@ public class Microcode {
     }
 
     public MicroOp[] getInstructionCode(int instruction) {
+        if (instruction>=n.length) return null;
         return n[instruction];
     }
 

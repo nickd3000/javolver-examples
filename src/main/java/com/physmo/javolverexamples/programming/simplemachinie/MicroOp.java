@@ -23,6 +23,8 @@ public enum MicroOp {
     OR,
     XOR,
     AND,
+    SHL, // Shift left
+    SHR, // Shift right
 
     JUMP,
     JUMP_NZ,
